@@ -7,9 +7,9 @@ For client side, please follow https://github.com/XTLS/Xray-core/blob/main/trans
 
 TODO List: TODO
 
-## VLESS-XTLS-uTLS-REALITY example for [Xray-core](https://github.com/XTLS/Xray-core) [中文]
+## VLESS-XTLS-uTLS-REALITY example for [Xray-core](https://github.com/XTLS/Xray-core)
 
-[English](README.en.md)
+中文 | [English](README.en.md)
 
 ```json5
 {
