@@ -7,11 +7,11 @@ For client side, please follow https://github.com/XTLS/Xray-core/blob/main/trans
 
 TODO List: TODO
 
-## VLESS-XTLS-uTLS-REALITY example for [Xray-core](https://github.com/XTLS/Xray-core) [中文]
+## VLESS-XTLS-uTLS-REALITY example for [Xray-core](https://github.com/XTLS/Xray-core) [English]
 
 ```json5
 {
-    "inbounds": [ // 服务端入站配置
+    "inbounds": [ // Server inbound configuration
         {
             "listen": "0.0.0.0",
             "port": 443,
@@ -19,8 +19,8 @@ TODO List: TODO
             "settings": {
                 "clients": [
                     {
-                        "id": "", // 必填，执行 ./xray uuid 生成，或 1-30 字节的字符串
-                        "flow": "xtls-rprx-vision" // 选填，若有，客户端必须启用 XTLS
+                        "id": "", // Required, execute ./xray uuid to generate, or a 1-30 byte string
+                        "flow": "xtls-rprx-vision" // Optional, if present, the client must enable XTLS
                     }
                 ],
                 "decryption": "none"
@@ -29,20 +29,20 @@ TODO List: TODO
                 "network": "tcp",
                 "security": "reality",
                 "realitySettings": {
-                    "show": false, // 选填，若为 true，输出调试信息
-                    "dest": "example.com:443", // 必填，格式同 VLESS fallbacks 的 dest
-                    "xver": 0, // 选填，格式同 VLESS fallbacks 的 xver
-                    "serverNames": [ // 必填，客户端可用的 serverName 列表，暂不支持 * 通配符
+                    "show": false, // Optional, if true, output debugging information
+                    "dest": "example.com:443", // Required, same format as VLESS fallbacks dest
+                    "xver": 0, // Optional, same format as VLESS fallbacks xver
+                    "serverNames": [ // Required, a list of serverNames available to the client, currently does not support * wildcard
                         "example.com",
                         "www.example.com"
                     ],
-                    "privateKey": "", // 必填，执行 ./xray x25519 生成
-                    "minClientVer": "", // 选填，客户端 Xray 最低版本，格式为 x.y.z
-                    "maxClientVer": "", // 选填，客户端 Xray 最高版本，格式为 x.y.z
-                    "maxTimeDiff": 0, // 选填，允许的最大时间差，单位为毫秒
-                    "shortIds": [ // 必填，客户端可用的 shortId 列表，可用于区分不同的客户端
-                        "" // 若有此项，客户端 shortId 可为空
-                        "0123456789abcdef" // 0 到 f，长度为 2 的倍数，长度上限为 16
+                    "privateKey": "", // Required, execute ./xray x25519 to generate
+                    "minClientVer": "", // Optional, minimum client Xray version, format is x.y.z
+                    "maxClientVer": "", // Optional, maximum client Xray version, format is x.y.z
+                    "maxTimeDiff": 0, // Optional, allowed maximum time difference, in milliseconds
+                    "shortIds": [ // Required, a list of shortIds available to the client, can be used to distinguish between different clients
+                        "" // If this item is present, client shortId can be empty
+                        "0123456789abcdef" // 0 to f, length is a multiple of 2, the maximum length is 16
                     ]
                 }
             }
@@ -51,30 +51,30 @@ TODO List: TODO
 }
 ```
 
-若用 REALITY 取代 TLS，**可消除服务端 TLS 指纹特征**，仍有前向保密性等，**且证书链攻击无效，安全性超越常规 TLS**  
-**可以指向别人的网站**，无需自己买域名、配置 TLS 服务端，更方便，**实现向中间人呈现指定 SNI 的全程真实 TLS**  
+If REALITY replaces TLS, **it eliminates server-side TLS fingerprint characteristics** while still providing forward secrecy, **and certificate chain attacks are ineffective, making its security surpass conventional TLS**  
+**You can point to someone else's website** without having to buy a domain name or configure a TLS server yourself, making it more convenient and **achieving full true TLS with a specified SNI presented to the man in the middle**  
 
-通常代理用途，目标网站最低标准：**国外网站，支持 TLSv1.3 与 H2，域名非跳转用**（主域名可能被用于跳转到 www）  
-加分项：IP 相近（更像，且延迟低），Server Hello 后的握手消息一起加密（如 dl.google.com），有 OCSP Stapling  
-配置加分项：**禁回国流量，TCP/80、UDP/443 也转发**（REALITY 对外表现即为端口转发，目标 IP 冷门或许更好）  
+For general proxy purposes, the minimum standard for target websites is: **foreign websites that support TLSv1.3 and H2, and domain names that are not used for redirection** (main domain names might be used for redirection to www)  
+Additional points: IP proximity (more similar and lower latency), encrypted handshake messages after Server Hello (e.g., dl.google.com), and OCSP Stapling  
+Configuration bonus points: **Disallow traffic from returning to the country, forward TCP/80 and UDP/443 as well** (REALITY outwardly appears as port forwarding, and a less popular target IP might be better)  
 
-**REALITY 也可以搭配 XTLS 以外的代理协议使用**，但不建议这样做，因为它们存在明显且已被针对的 TLS in TLS 特征  
-REALITY 的下一个主要目标是“**预先构建模式**”，即提前采集目标网站特征，XTLS 的下一个主要目标是 **0-RTT**  
+**REALITY can also be used with proxy protocols other than XTLS**, but it is not recommended because they have obvious and targeted TLS in TLS characteristics  
+The next main goal of REALITY is "**pre-built mode**", i.e., collecting target website features in advance, and the next main goal of XTLS is **0-RTT**  
 
 ```json5
 {
-    "outbounds": [ // 客户端出站配置
+    "outbounds": [ // Client outbound configuration
         {
             "protocol": "vless",
             "settings": {
                 "vnext": [
                     {
-                        "address": "", // 服务端的域名或 IP
+                        "address": "", // Domain name or IP of the server
                         "port": 443,
                         "users": [
                             {
-                                "id": "", // 与服务端一致
-                                "flow": "xtls-rprx-vision", // 与服务端一致
+                                "id": "", // Consistent with the server
+                                "flow": "xtls-rprx-vision", // Consistent with the server
                                 "encryption": "none"
                             }
                         ]
@@ -85,12 +85,12 @@ REALITY 的下一个主要目标是“**预先构建模式**”，即提前采�
                 "network": "tcp",
                 "security": "reality",
                 "realitySettings": {
-                    "show": false, // 选填，若为 true，输出调试信息
-                    "fingerprint": "chrome", // 必填，使用 uTLS 库模拟客户端 TLS 指纹
-                    "serverName": "", // 服务端 serverNames 之一
-                    "publicKey": "", // 服务端私钥对应的公钥
-                    "shortId": "", // 服务端 shortIds 之一
-                    "spiderX": "" // 爬虫初始路径与参数，建议每个客户端不同
+                    "show": false, // Optional, if true, output debugging information
+                    "fingerprint": "chrome", // Required, use uTLS library to simulate client TLS fingerprint
+                    "serverName": "", // One of the serverNames from the server
+                    "publicKey": "", // Public key corresponding to the server's private key
+                    "shortId": "", // One of the server's shortIds
+                    "spiderX": "" // Spider initial path and parameters, it is recommended that each client has a different configuration
                 }
             }
         }
@@ -98,14 +98,14 @@ REALITY 的下一个主要目标是“**预先构建模式**”，即提前采�
 }
 ```
 
-REALITY 客户端应当收到由“**临时认证密钥**”签发的“**临时可信证书**”，但以下三种情况会收到目标网站的真证书：
+The REALITY client should receive a "**temporary trusted certificate**" issued by the "**temporary authentication key**", but in the following three cases, it will receive the target website's real certificate:
 
-1. REALITY 服务端拒绝了客户端的 Client Hello，流量被导入目标网站
-2. 客户端的 Client Hello 被中间人重定向至目标网站
-3. 中间人攻击，可能是目标网站帮忙，也可能是证书链攻击
+1. The REALITY server rejects the client's Client Hello, and the traffic is directed to the target website
+2. The client's Client Hello is redirected to the target website by a man in the middle
+3. A man-in-the-middle attack, which could involve the target website's assistance or a certificate chain attack
 
-REALITY 客户端可以完美区分临时可信证书、真证书、无效证书，并决定下一步动作：
+The REALITY client can perfectly distinguish between temporary trusted certificates, real certificates, and invalid certificates, and decide on the next course of action:
 
-1. 收到临时可信证书时，连接可用，一切如常
-2. 收到真证书时，进入爬虫模式
-3. 收到无效证书时，TLS alert，断开连接
+1. When receiving a temporary trusted certificate, the connection is usable, and everything proceeds as normal
+2. When receiving a real certificate, the client enters spider mode
+3. When receiving an invalid certificate, a TLS alert is triggered, and the connection is disconnected
